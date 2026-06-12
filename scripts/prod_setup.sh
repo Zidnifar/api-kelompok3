@@ -85,5 +85,5 @@ docker compose -f docker-compose-prod.yml exec php php artisan route:clear
 docker compose -f docker-compose-prod.yml exec php php artisan view:clear
 
 echo "Setup complete!"
-echo "Your application is running at: https://api-mahasiswa-4a.akufarish.my.id:1234"
+echo "Your application is running at: https://api-mahasiswa-4a.akufarish.my.id:8874"
 echo "Database is available at: localhost:33060"
