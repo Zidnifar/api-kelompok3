@@ -20,9 +20,20 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+   public function boot(): void
     {
-       Scramble::configure()
+    Scramble::configure()
+        ->routes(function (\Illuminate\Routing\Route $route) {
+            // Sembunyikan route internal
+            if (str_starts_with($route->uri(), 'api/internal')) {
+                return false;
+            }
+            // Sembunyikan debug-token
+            if (str_starts_with($route->uri(), 'api/debug-token')) {
+                return false;
+            }
+            return str_starts_with($route->uri(), 'api/');
+        })
         ->withDocumentTransformers(function (OpenApi $openApi) {
             $openApi->secure(
                 SecurityScheme::http('bearer')
