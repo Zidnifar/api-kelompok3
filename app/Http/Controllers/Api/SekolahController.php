@@ -31,7 +31,7 @@ class SekolahController extends Controller
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
 
         $validated = $request->validate([
-            'pendidikan_asal'      => 'required|in:MA,SMA,Paket C,Pondok Pesantren,SMA Di Luar Negeri',
+            'pendidikan_asal'      => 'required|in:MA,SMK,SMA,Paket C,Pondok Pesantren,SMA Di Luar Negeri',
             'id_provinsi_sekolah'  => 'nullable|integer',
             'id_kota_sekolah'      => 'nullable|integer',
             'nama_sekolah'         => 'required|string|max:150',
@@ -64,7 +64,7 @@ class SekolahController extends Controller
         }
 
         $validated = $request->validate([
-            'pendidikan_asal'      => 'sometimes|in:MA,SMA,Paket C,Pondok Pesantren,SMA Di Luar Negeri',
+            'pendidikan_asal'      => 'sometimes|in:MA,SMA,SMK,Paket C,Pondok Pesantren,SMA Di Luar Negeri',
             'id_provinsi_sekolah'  => 'sometimes|nullable|integer',
             'id_kota_sekolah'      => 'sometimes|nullable|integer',
             'nama_sekolah'         => 'sometimes|string|max:150',
