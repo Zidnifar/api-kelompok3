@@ -114,6 +114,9 @@ class MahasiswaController extends Controller
         ]);
     }
 
+    /**
+    * @hideFromApiDocs
+    */
     public function internalIndex()
     {
         $mahasiswa = Mahasiswa::with([
@@ -126,6 +129,9 @@ class MahasiswaController extends Controller
         ]);
     }
 
+     /**
+    * @hideFromApiDocs
+    */
     public function internalShow($nim)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)
