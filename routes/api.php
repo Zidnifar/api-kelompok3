@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\OrangTuaWaliController;
 use App\Http\Controllers\Api\SekolahController;
 use App\Http\Controllers\Api\KrsController;
 
-// ─── Debug token (tanpa middleware) ───────────────────────────
 Route::get('/debug-token', function (Illuminate\Http\Request $request) {
     $authHeader = $request->header('Authorization');
     $token      = substr($authHeader, 7);
@@ -30,6 +29,8 @@ Route::get('/debug-token', function (Illuminate\Http\Request $request) {
     ]);
 });
 
+Route::get('/internal/mahasiswa',       [MahasiswaController::class, 'internalIndex']);
+Route::get('/internal/mahasiswa/{nim}', [MahasiswaController::class, 'internalShow']);
 Route::middleware('jwt')->group(function () {
 
     // MAHASISWA

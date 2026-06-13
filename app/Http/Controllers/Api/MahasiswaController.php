@@ -113,4 +113,21 @@ class MahasiswaController extends Controller
             'message' => 'Data mahasiswa berhasil dihapus'
         ]);
     }
+
+    public function internalShow($nim)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $nim)
+            ->with([
+                'biodata',
+                'alamat',
+                'orangTuaWali',
+                'sekolah'
+            ])
+            ->firstOrFail();
+ 
+        return response()->json([
+            'success' => true,
+            'data' => new MahasiswaResource($mahasiswa)
+        ]);
+    }
 }
