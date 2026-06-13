@@ -114,6 +114,18 @@ class MahasiswaController extends Controller
         ]);
     }
 
+    public function internalIndex()
+    {
+        $mahasiswa = Mahasiswa::with([
+            'biodata', 'alamat', 'orangTuaWali', 'sekolah'
+        ])->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => MahasiswaResource::collection($mahasiswa)
+        ]);
+    }
+
     public function internalShow($nim)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)
