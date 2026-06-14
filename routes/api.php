@@ -35,7 +35,7 @@ Route::middleware('jwt')->group(function () {
 
     // MAHASISWA
     Route::get('/mahasiswa', [MahasiswaController::class, 'index'])
-        ->middleware('jwt:admin-mahasiswa, super-admin');
+        ->middleware('jwt:admin-mahasiswa, super-admin, admin-keuangan');
 
     Route::post('/mahasiswa', [MahasiswaController::class, 'store'])
         ->middleware('jwt:admin-mahasiswa, super-admin');
