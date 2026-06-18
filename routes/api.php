@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AlamatController;
 use App\Http\Controllers\Api\OrangTuaWaliController;
 use App\Http\Controllers\Api\SekolahController;
 use App\Http\Controllers\Api\KrsController;
+use App\Constants\Roles;
 
 Route::get('/debug-token', function (Illuminate\Http\Request $request) {
     $authHeader = $request->header('Authorization');
@@ -31,59 +32,61 @@ Route::get('/debug-token', function (Illuminate\Http\Request $request) {
 
 Route::get('/internal/mahasiswa',       [MahasiswaController::class, 'internalIndex']);
 Route::get('/internal/mahasiswa/{nim}', [MahasiswaController::class, 'internalShow']);
+
 Route::middleware('jwt')->group(function () {
 
     // MAHASISWA
     Route::get('/mahasiswa', [MahasiswaController::class, 'index'])
-        ->middleware('jwt:admin-mahasiswa,admin-akademik,super-admin,admin-keuangan,admin-pegawai');
+        ->middleware('jwt:' . Roles::VIEW_MAHASISWA);
 
-    Route::post('/mahasiswa', [MahasiswaController::class, 'store'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
+    Route::get('/mahasiswa/{nim}', [MahasiswaController::class, 'show']);
+    Route::put('/mahasiswa/{nim}', [MahasiswaController::class, 'update']);
 
-    Route::get('/mahasiswa/{nim}',    [MahasiswaController::class, 'show']);
-    Route::put('/mahasiswa/{nim}',    [MahasiswaController::class, 'update']);
-    Route::delete('/mahasiswa/{nim}', [MahasiswaController::class, 'destroy'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
+    Route::middleware('jwt:' . Roles::MANAGE_MAHASISWA)->group(function () {
+        Route::post('/mahasiswa', [MahasiswaController::class, 'store']);
+        Route::delete('/mahasiswa/{nim}', [MahasiswaController::class, 'destroy']);
 
-    // BIODATA
-    Route::get('/mahasiswa/{nim}/biodata',    [BiodataController::class, 'show']);
-    Route::post('/mahasiswa/{nim}/biodata',   [BiodataController::class, 'store'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
-    Route::put('/mahasiswa/{nim}/biodata',    [BiodataController::class, 'update']);
-    Route::delete('/mahasiswa/{nim}/biodata', [BiodataController::class, 'destroy'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
+        // BIODATA
+        Route::post('/mahasiswa/{nim}/biodata',   [BiodataController::class, 'store']);
+        Route::delete('/mahasiswa/{nim}/biodata', [BiodataController::class, 'destroy']);
+
+        // ALAMAT
+        Route::post('/mahasiswa/{nim}/alamat',   [AlamatController::class, 'store']);
+        Route::delete('/mahasiswa/{nim}/alamat', [AlamatController::class, 'destroy']);
+
+        // ORANG TUA & WALI
+        Route::post('/mahasiswa/{nim}/ortu',             [OrangTuaWaliController::class, 'store']);
+        Route::delete('/mahasiswa/{nim}/ortu/{id_ortu}', [OrangTuaWaliController::class, 'destroy']);
+
+        // SEKOLAH
+        Route::post('/mahasiswa/{nim}/sekolah',   [SekolahController::class, 'store']);
+        Route::delete('/mahasiswa/{nim}/sekolah', [SekolahController::class, 'destroy']);
+    });
+
+    // BIODATA (read & update bebas untuk semua role terautentikasi)
+    Route::get('/mahasiswa/{nim}/biodata', [BiodataController::class, 'show']);
+    Route::put('/mahasiswa/{nim}/biodata', [BiodataController::class, 'update']);
 
     // ALAMAT
-    Route::get('/mahasiswa/{nim}/alamat',    [AlamatController::class, 'show']);
-    Route::post('/mahasiswa/{nim}/alamat',   [AlamatController::class, 'store'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
-    Route::put('/mahasiswa/{nim}/alamat',    [AlamatController::class, 'update']);
-    Route::delete('/mahasiswa/{nim}/alamat', [AlamatController::class, 'destroy'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
+    Route::get('/mahasiswa/{nim}/alamat', [AlamatController::class, 'show']);
+    Route::put('/mahasiswa/{nim}/alamat', [AlamatController::class, 'update']);
 
     // ORANG TUA & WALI
-    Route::get('/mahasiswa/{nim}/ortu',              [OrangTuaWaliController::class, 'index']);
-    Route::post('/mahasiswa/{nim}/ortu',             [OrangTuaWaliController::class, 'store'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
-    Route::put('/mahasiswa/{nim}/ortu/{id_ortu}',    [OrangTuaWaliController::class, 'update']);
-    Route::delete('/mahasiswa/{nim}/ortu/{id_ortu}', [OrangTuaWaliController::class, 'destroy'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
+    Route::get('/mahasiswa/{nim}/ortu',           [OrangTuaWaliController::class, 'index']);
+    Route::put('/mahasiswa/{nim}/ortu/{id_ortu}', [OrangTuaWaliController::class, 'update']);
 
     // SEKOLAH
-    Route::get('/mahasiswa/{nim}/sekolah',    [SekolahController::class, 'show']);
-    Route::post('/mahasiswa/{nim}/sekolah',   [SekolahController::class, 'store'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
-    Route::put('/mahasiswa/{nim}/sekolah',    [SekolahController::class, 'update']);
-    Route::delete('/mahasiswa/{nim}/sekolah', [SekolahController::class, 'destroy'])
-        ->middleware('jwt:admin-mahasiswa,super-admin');
+    Route::get('/mahasiswa/{nim}/sekolah', [SekolahController::class, 'show']);
+    Route::put('/mahasiswa/{nim}/sekolah', [SekolahController::class, 'update']);
 
     // KRS
     Route::get('/mahasiswa/{nim}/krs',             [KrsController::class, 'index']);
     Route::post('/mahasiswa/{nim}/krs',            [KrsController::class, 'store']);
     Route::get('/mahasiswa/{nim}/krs/{id_krs}',    [KrsController::class, 'show']);
     Route::put('/mahasiswa/{nim}/krs/{id_krs}',    [KrsController::class, 'update']);
+
     Route::delete('/mahasiswa/{nim}/krs/{id_krs}', [KrsController::class, 'destroy'])
-        ->middleware('jwt:admin-mahasiswa,super-admin,admin-pegawai');
+        ->middleware('jwt:' . Roles::MANAGE_KRS_DELETE);
 
     // KRS DETAIL
     Route::get('/mahasiswa/{nim}/krs/{id_krs}/detail',                [KrsController::class, 'detailIndex']);
