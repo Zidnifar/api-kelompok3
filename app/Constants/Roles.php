@@ -11,5 +11,5 @@ class Roles
     const MANAGE_MAHASISWA = 'admin-mahasiswa,super-admin';
 
     // Role yang boleh hapus KRS (lebih luas dari MANAGE_MAHASISWA)
-    const MANAGE_KRS_DELETE = 'admin-mahasiswa,super-admin,admin-pegawai';
+    const MANAGE_KRS_DELETE = 'admin-mahasiswa,super-admin,dosen';
 }
