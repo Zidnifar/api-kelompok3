@@ -21,7 +21,9 @@ class KrsResource extends JsonResource
             'catatan_pembimbing' => $this->catatan_pembimbing,
             'created_at'         => $this->created_at,
             'updated_at'         => $this->updated_at,
-            'detail'             => KrsDetailResource::collection($this->whenLoaded('detail')),
+            
+            // Relasi ke detail KRS
+            'krs_detail' => KrsDetailResource::collection($this->whenLoaded('krsDetail')),
         ];
     }
 }
