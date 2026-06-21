@@ -32,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
             if (str_starts_with($route->uri(), 'api/debug-token')) {
                 return false;
             }
+            if (str_starts_with($route->uri(), 'api//mahasiswa/{nim}/krs-detail')) {
+                return false;
+            }
             return str_starts_with($route->uri(), 'api/');
         })
         ->withDocumentTransformers(function (OpenApi $openApi) {
