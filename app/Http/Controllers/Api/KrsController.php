@@ -31,15 +31,12 @@ class KrsController extends Controller
 
     // =========================================================
     // GET /mahasiswa/{nim}/krs-detail
-    // Endpoint terpisah: KRS + info nim, nama_mahasiswa, prodi_id
+    // PUBLIK — tidak perlu token JWT
+    // KRS + info nim, nama_mahasiswa, prodi_id
     // =========================================================
-    public function indexWithMahasiswa(Request $request, $nim)
+    public function indexWithMahasiswa($nim)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
-
-        if ($request->jwt_role === 'mahasiswa' && $request->jwt_detail_id != $mahasiswa->id_mahasiswa) {
-            return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
-        }
 
         $krs = Krs::where('id_mahasiswa', $mahasiswa->id_mahasiswa)
             ->with(['detail', 'mahasiswa'])
