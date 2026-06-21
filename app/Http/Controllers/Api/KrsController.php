@@ -20,6 +20,28 @@ class KrsController extends Controller
         }
 
         $krs = Krs::where('id_mahasiswa', $mahasiswa->id_mahasiswa)
+            ->with('detail')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $krs
+        ]);
+    }
+
+    // =========================================================
+    // GET /mahasiswa/{nim}/krs-detail
+    // Endpoint terpisah: KRS + info nim, nama_mahasiswa, prodi_id
+    // =========================================================
+    public function indexWithMahasiswa(Request $request, $nim)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        if ($request->jwt_role === 'mahasiswa' && $request->jwt_detail_id != $mahasiswa->id_mahasiswa) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
+        }
+
+        $krs = Krs::where('id_mahasiswa', $mahasiswa->id_mahasiswa)
             ->with(['detail', 'mahasiswa'])
             ->get();
 
@@ -48,12 +70,8 @@ class KrsController extends Controller
         $validated['id_mahasiswa'] = $mahasiswa->id_mahasiswa;
 
         $krs = Krs::create($validated);
-        $krs->load('mahasiswa');
 
-        return response()->json([
-            'success' => true,
-            'data' => new KrsResource($krs)
-        ], 201);
+        return response()->json(['success' => true, 'data' => $krs], 201);
     }
 
     public function show(Request $request, $nim, $id_krs)
@@ -66,17 +84,14 @@ class KrsController extends Controller
 
         $krs = Krs::where('id_mahasiswa', $mahasiswa->id_mahasiswa)
             ->where('id_krs', $id_krs)
-            ->with(['detail', 'mahasiswa'])
+            ->with('detail')
             ->first();
 
         if (!$krs) {
             return response()->json(['success' => false, 'message' => 'Data KRS tidak ditemukan'], 404);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => new KrsResource($krs)
-        ]);
+        return response()->json(['success' => true, 'data' => $krs]);
     }
 
     public function update(Request $request, $nim, $id_krs)
@@ -104,12 +119,8 @@ class KrsController extends Controller
         ]);
 
         $krs->update($validated);
-        $krs->load('mahasiswa');
 
-        return response()->json([
-            'success' => true,
-            'data' => new KrsResource($krs)
-        ]);
+        return response()->json(['success' => true, 'data' => $krs]);
     }
 
     public function destroy(Request $request, $nim, $id_krs)
