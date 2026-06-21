@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Mahasiswa;
 use App\Models\Krs;
 use App\Models\KrsDetail;
+use App\Http\Resources\KrsResource;
 use Illuminate\Http\Request;
 
 class KrsController extends Controller
@@ -19,10 +20,13 @@ class KrsController extends Controller
         }
 
         $krs = Krs::where('id_mahasiswa', $mahasiswa->id_mahasiswa)
-            ->with('detail')
+            ->with(['detail', 'mahasiswa'])
             ->get();
 
-        return response()->json(['success' => true, 'data' => $krs]);
+        return response()->json([
+            'success' => true,
+            'data' => KrsResource::collection($krs)
+        ]);
     }
 
     public function store(Request $request, $nim)
@@ -44,8 +48,12 @@ class KrsController extends Controller
         $validated['id_mahasiswa'] = $mahasiswa->id_mahasiswa;
 
         $krs = Krs::create($validated);
+        $krs->load('mahasiswa');
 
-        return response()->json(['success' => true, 'data' => $krs], 201);
+        return response()->json([
+            'success' => true,
+            'data' => new KrsResource($krs)
+        ], 201);
     }
 
     public function show(Request $request, $nim, $id_krs)
@@ -58,14 +66,17 @@ class KrsController extends Controller
 
         $krs = Krs::where('id_mahasiswa', $mahasiswa->id_mahasiswa)
             ->where('id_krs', $id_krs)
-            ->with('detail')
+            ->with(['detail', 'mahasiswa'])
             ->first();
 
         if (!$krs) {
             return response()->json(['success' => false, 'message' => 'Data KRS tidak ditemukan'], 404);
         }
 
-        return response()->json(['success' => true, 'data' => $krs]);
+        return response()->json([
+            'success' => true,
+            'data' => new KrsResource($krs)
+        ]);
     }
 
     public function update(Request $request, $nim, $id_krs)
@@ -93,8 +104,12 @@ class KrsController extends Controller
         ]);
 
         $krs->update($validated);
+        $krs->load('mahasiswa');
 
-        return response()->json(['success' => true, 'data' => $krs]);
+        return response()->json([
+            'success' => true,
+            'data' => new KrsResource($krs)
+        ]);
     }
 
     public function destroy(Request $request, $nim, $id_krs)

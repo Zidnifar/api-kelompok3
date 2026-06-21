@@ -17,4 +17,9 @@ class Krs extends Model
     {
         return $this->hasMany(KrsDetail::class, 'id_krs', 'id_krs');
     }
+
+    public function mahasiswa()
+    {
+        return $this->belongsTo(Mahasiswa::class, 'id_mahasiswa', 'id_mahasiswa');
+    }
 }
