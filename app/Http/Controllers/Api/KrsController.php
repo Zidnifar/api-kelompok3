@@ -34,6 +34,28 @@ class KrsController extends Controller
     // PUBLIK — tidak perlu token JWT
     // KRS + info nim, nama_mahasiswa, prodi_id
     // =========================================================
+    public function indexAllKrsDetail(Request $request)
+    {
+        $query = Krs::with(['detail', 'mahasiswa']);
+
+        // Filter opsional via query string, contoh: ?status_krs=Divalidasi
+        if ($request->has('status_krs')) {
+            $query->where('status_krs', $request->status_krs);
+        }
+
+        // Filter opsional via query string, contoh: ?semester_saat_ini=3
+        if ($request->has('semester_saat_ini')) {
+            $query->where('semester_saat_ini', $request->semester_saat_ini);
+        }
+
+        $krs = $query->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => KrsResource::collection($krs)
+        ]);
+    }
+
     public function indexWithMahasiswa($nim)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
