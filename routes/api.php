@@ -32,7 +32,7 @@ Route::get('/debug-token', function (Illuminate\Http\Request $request) {
 
 Route::get('/internal/mahasiswa',       [MahasiswaController::class, 'internalIndex']);
 Route::get('/internal/mahasiswa/{nim}', [MahasiswaController::class, 'internalShow']);
-oute::get('/krs-detail', [KrsController::class, 'indexAllKrsDetail']);
+Route::get('/krs-detail', [KrsController::class, 'indexAllKrsDetail']);
 Route::get('/mahasiswa/{nim}/krs-detail', [KrsController::class, 'indexWithMahasiswa']);
 
 Route::middleware('jwt')->group(function () {
